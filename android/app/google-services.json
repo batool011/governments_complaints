@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "846298274214",
+    "project_id": "governments-complaints",
+    "storage_bucket": "governments-complaints.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846298274214:android:c83231a06f5b328a979767",
+        "android_client_info": {
+          "package_name": "com.example.governments_complaints"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtYd9vd-8ugma2C3xnNcT0NotmkfCylQg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
