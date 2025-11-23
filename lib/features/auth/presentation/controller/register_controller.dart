@@ -1,10 +1,13 @@
 // app/modules/auth/register/controllers/register_controller.dart
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:governments_complaints/core/constant/class/app_color.dart';
 import 'package:governments_complaints/core/network/token_storage.dart';
 import 'package:governments_complaints/core/routes/app_route.dart';
 import 'package:governments_complaints/features/auth/data/repository/auth_repo.dart';
+
+import '../../../../core/notification/push_notification_services.dart';
 
 
 class RegisterController extends GetxController {
@@ -33,15 +36,15 @@ final phoneController =TextEditingController();
  Future<void> register() async {
     errorMessage.value = '';
     isLoading.value = true;
-    // var deviceToken = await TokenStorage.getDeviceToken();
-    // print('device token: $deviceToken');
+     var deviceToken = await TokenStorage.getDeviceToken();
+     print('device token: $deviceToken');
 
-    // if (deviceToken == null || deviceToken.isEmpty) {
-    //   await Firebase.initializeApp();
-    //   await FirebaseMessagingService().initNotificationsSettings();
-    //   deviceToken = await TokenStorage.getDeviceToken();
-    //   print('device token 2: $deviceToken');
-    // }
+     if (deviceToken == null || deviceToken.isEmpty) {
+       await Firebase.initializeApp();
+       await FirebaseMessagingService().initNotificationsSettings();
+       deviceToken = await TokenStorage.getDeviceToken();
+       print('device token 2: $deviceToken');
+     }
 
     try {
       // MultipartFile? profileImageFile;
@@ -65,8 +68,8 @@ final phoneController =TextEditingController();
         "email": emailController.text,
         "phone":phoneController.text,
         "password": passwordController.text,
-        "password_confirmation":confirmPasswordController.text
-      //  "fcm_token": deviceToken.toString(),
+        "password_confirmation":confirmPasswordController.text,
+        "fcm_token": deviceToken.toString(),
        
       };
       

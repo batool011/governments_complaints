@@ -1,4 +1,5 @@
 // app/modules/auth/register/controllers/register_controller.dart
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:governments_complaints/core/cache/cach_helper.dart';
@@ -6,6 +7,8 @@ import 'package:governments_complaints/core/constant/class/app_color.dart';
 import 'package:governments_complaints/core/network/token_storage.dart';
 import 'package:governments_complaints/core/routes/app_route.dart';
 import 'package:governments_complaints/features/auth/data/repository/auth_repo.dart';
+
+import '../../../../core/notification/push_notification_services.dart';
 
 class LoginController extends GetxController {
   final AuthRepository repo =AuthRepository();
@@ -35,22 +38,22 @@ class LoginController extends GetxController {
   Future<void> login() async {
     errorMessage.value = '';
     isLoading.value = true;
-    // var deviceToken = await TokenStorage.getDeviceToken();
-    // print('device token: $deviceToken');
+     var deviceToken = await TokenStorage.getDeviceToken();
+     print('device token: $deviceToken');
 
-    // if (deviceToken == null || deviceToken.isEmpty) {
-    //   await Firebase.initializeApp();
-    //   await FirebaseMessagingService().initNotificationsSettings();
-    //   deviceToken = await TokenStorage.getDeviceToken();
-    //   print('device token 2: $deviceToken');
-    // }
+     if (deviceToken == null || deviceToken.isEmpty) {
+      await Firebase.initializeApp();
+      await FirebaseMessagingService().initNotificationsSettings();
+       deviceToken = await TokenStorage.getDeviceToken();
+       print('device token 2: $deviceToken');
+    }
 
     try {
     
       final data ={
         "email": emailController.text,
         "password": passwordController.text,
-      //  "fcm_token": deviceToken.toString(),
+        "fcm_token": deviceToken.toString(),
        
       };
      
