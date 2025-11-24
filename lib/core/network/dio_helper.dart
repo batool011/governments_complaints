@@ -34,12 +34,13 @@ class DioHelper {
     bool requiresToken = false,
     bool? withJsonContent,
   }) async {
-    if (requiresToken) {
-      final token = await TokenStorage.getToken();
+  //  if (requiresToken) {
+     // final token = await TokenStorage.getToken();
+     final token=" eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDEvYXBpL2F1dGgvbG9naW4iLCJpYXQiOjE3NjM5OTI4MDQsImV4cCI6MTc2Mzk5NjQwNCwibmJmIjoxNzYzOTkyODA0LCJqdGkiOiJUQjRxcGZvVWlrcUhmYkpBIiwic3ViIjoiMzgiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.z8WLlfAizE8Xa9MoI8Oj5izF6ZUgFUppf7aadCJtMX8";
       if (token != null && token.isNotEmpty) {
         _dio.options.headers['Authorization'] = 'Bearer $token';
       }
-    }
+ //   }
     print("withJsonContent");
     print(withJsonContent);
     if (withJsonContent == true) {

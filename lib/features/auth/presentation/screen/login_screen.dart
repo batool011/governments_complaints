@@ -25,7 +25,7 @@ class LoginScreen extends GetView<LoginController> {
       body: SafeArea(
         child: Stack(
           children: [
-            Image.asset(AppAsset.vector, color: AppColor.primaryColor),
+           // Image.asset(AppAsset.vector, color: AppColor.primaryColor),
             SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(

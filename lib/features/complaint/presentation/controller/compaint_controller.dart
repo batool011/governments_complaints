@@ -1,336 +1,490 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../data/models/complaint_model.dart';
 import '../../data/repository/complaint_repository.dart';
 import '../widgets/attachment_options_bottom_sheet.dart';
-import '../widgets/attachment_service.dart';
-import '../widgets/permission_service.dart';
 
-class ComplaintController extends GetxController {
+class ComplaintsController extends GetxController {
   final ComplaintRepository repository;
-  final PermissionService _permissionService = PermissionService();
-  final AttachmentService _attachmentService = AttachmentService();
 
-  ComplaintController(this.repository);
+  ComplaintsController(this.repository);
 
-  // ========== متغيرات النموذج ==========
+  // متغيرات النموذج
   final complaintTypeController = TextEditingController();
   final governmentEntityController = TextEditingController();
   final locationController = TextEditingController();
   final descriptionController = TextEditingController();
-  
+
   final selectedComplaintType = ''.obs;
-
   final selectedGovernmentEntity = ''.obs;
+  bool _mounted = true;
+  final attachedFiles = <Map<String, dynamic>>[].obs;
 
-  final attachedFiles = <File>[].obs;
   final isLoading = false.obs;
+  final isEditing = false.obs;
+final editingComplaintId = 0.obs;
 
+  // Pagination
   final currentPage = 1.obs;
-final totalPages = 1.obs;
-final totalItems = 0.obs;
-final hasMoreComplaints = true.obs;
-final isLoadMore = false.obs;
+  final totalPages = 1.obs;
+  final totalItems = 0.obs;
+  final hasMoreComplaints = true.obs;
+  final isLoadMore = false.obs;
 
-  // ========== قائمة الشكاوى ==========
+  // قائمة الشكاوى
   final complaintsList = <ComplaintModel>[].obs;
   final isLoadingComplaints = false.obs;
 
-  // ========== قائمة الشركات الحكومية ==========
+  // قائمة الشركات الحكومية
   final companies = <CompanyModel>[].obs;
   final isLoadingCompanies = false.obs;
 
-  // ========== القوائم الثابتة ==========
+  // القوائم الثابتة
   final complaintTypes = [
     'Type1',
     'Type2',
     'Type3',
   ];
 
-  // ========== دوال جلب الشركات الحكومية ==========
   List<String> get companyNames {
     return companies.map((company) => company.name).toList();
   }
-Future<void> loadCompanies() async {
-  try {
-    isLoadingCompanies.value = true;
-    print(' جلب قائمة الشركات الحكومية...');
 
-    final result = await repository.getAllCompanies();
+  // دوال جلب الشركات الحكومية
+  Future<void> loadCompanies() async {
+    try {
+      isLoadingCompanies.value = true;
+      final result = await repository.getAllCompanies();
 
-    result.fold(
-      (error) {
-        isLoadingCompanies.value = false;
-        print(' فشل جلب الشركات: ${error.message}');
-        _showErrorSnackbar('فشل في تحميل قائمة الشركات الحكومية: ${error.message}');
-      },
-      (companiesList) {
-        companies.assignAll(companiesList);
-        isLoadingCompanies.value = false;
-        print('✅ تم جلب ${companiesList.length} شركة حكومية');
-        
-        // طباعة أسماء الشركات للتأكد
-        for (var company in companiesList) {
-          print('🏢 ${company.name} - ${company.location}');
-        }
-      },
-    );
-  } catch (e) {
-    isLoadingCompanies.value = false;
-    print('خطأ غير متوقع في جلب الشركات: $e');
-    _showErrorSnackbar('حدث خطأ في تحميل قائمة الشركات الحكومية');
+      result.fold(
+        (error) {
+          isLoadingCompanies.value = false;
+          print('فشل تحميل الشركات الحكومية: ${error.message}');
+        },
+        (companiesList) {
+          companies.assignAll(companiesList);
+          isLoadingCompanies.value = false;
+        },
+      );
+    } catch (e) {
+      isLoadingCompanies.value = false;
+      print('حدث خطأ أثناء تحميل الشركات الحكومية: $e');
+    }
   }
-}
 
-  // ========== إدارة المرفقات ==========
+  //المرفقات
   Future<void> pickImageFromGallery() async {
-    final file = await _attachmentService.pickImageFromGallery();
-    if (file != null) {
-      attachedFiles.add(file);
-      _showSuccessSnackbar('تم إضافة الصورة بنجاح');
+    try {
+      final XFile? image = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1200,
+        maxHeight: 1200,
+        imageQuality: 80,
+      );
+
+      if (image != null && _mounted) {
+        final file = File(image.path);
+        final size = await file.length();
+        
+        if (size > 10 * 1024 * 1024) {
+          print('حجم الصورة كبير جداً');
+          return;
+        }
+        
+        attachedFiles.add({'file': file, 'size': size});
+        print('✅ تم إضافة الصورة: ${image.path}');
+        update(); // ⭐ مهم لتحديث الواجهة
+      }
+    } catch (e) {
+      print('خطأ في اختيار الصورة: $e');
     }
   }
 
   Future<void> captureImageFromCamera() async {
-    final file = await _attachmentService.captureImageFromCamera();
-    if (file != null) {
-      attachedFiles.add(file);
-      _showSuccessSnackbar('تم التقاط الصورة بنجاح');
-    }
-  }
+    try {
+      final XFile? image = await ImagePicker().pickImage(
+        source: ImageSource.camera,
+      );
 
-  Future<void> pickFile() async {
-    final file = await _attachmentService.pickFile();
-    if (file != null) {
-      attachedFiles.add(file);
-      _showSuccessSnackbar('تم إضافة الملف بنجاح');
+      if (image != null) {
+        final file = File(image.path);
+        attachedFiles.add({'file': file, 'size': await file.length()});
+        print('✅ تم التقاط الصورة: ${image.path}');
+        update(); // ⭐ مهم لتحديث الواجهة
+      }
+    } catch (e) {
+      print('خطأ في التقاط الصورة: $e');
     }
   }
 
   void removeAttachment(int index) {
     attachedFiles.removeAt(index);
-    _showSuccessSnackbar('تم إزالة المرفق');
+    print('✅ تم إزالة المرفق');
+    update(); 
   }
 
   void showAttachmentOptions() {
-    Get.bottomSheet(
-    AttachmentOptionsBottomSheet()
-    );
-  }
-
-
-
-  // ========== إدارة الشكاوى ==========
-Future<void> loadComplaints({bool loadMore = false}) async {
-  try {
-    if (loadMore) {
-      if (!hasMoreComplaints.value || isLoadMore.value) return;
-      isLoadMore.value = true;
-    } else {
-      isLoadingComplaints.value = true;
-      currentPage.value = 1;
-      hasMoreComplaints.value = true;
+    try {
+      Get.bottomSheet(
+        Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'إضافة مرفق',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // خيار المعرض
+                ListTile(
+                  leading: const Icon(Icons.photo_library, color: Colors.blue),
+                  title: const Text('المعرض'),
+                  subtitle: const Text('اختيار صورة من المعرض'),
+                  onTap: () {
+                    Get.back();
+                    
+                    pickImageFromGallery();
+                  },
+                ),
+                // خيار الكاميرا
+                ListTile(
+                  leading: const Icon(Icons.camera_alt, color: Colors.green),
+                  title: const Text('الكاميرا'),
+                  subtitle: const Text('التقاط صورة جديدة'),
+                  onTap: () {
+                    Get.back();
+                    
+                    captureImageFromCamera();
+                  },
+                ),
+                const SizedBox(height: 15),
+                // زر الإلغاء
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Get.back(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[300],
+                      foregroundColor: Colors.grey[700],
+                    ),
+                    child: const Text('إلغاء'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        isScrollControlled: true,
+        enableDrag: true,
+      );
+    } catch (e) {
+      print(' خطأ في فتح Bottom Sheet: $e');
+      _showDirectOptions();
     }
-
-    print('🔄 جلب الشكاوى - الصفحة ${currentPage.value}...');
-
-    final result = await repository.getUserComplaints(page: currentPage.value);
-
-    result.fold(
-      (error) {
-        isLoadingComplaints.value = false;
-        isLoadMore.value = false;
-        _showErrorSnackbar(error!.message);
-      },
-      (response) {
-        final List<ComplaintModel> complaints = response['complaints'];
-        final meta = response['meta'];
-        
-        // تحديث بيانات الباجينيشن
-        totalPages.value = meta['total_pages'] ?? 1;
-        totalItems.value = meta['total'] ?? 0;
-        currentPage.value = meta['current_page'] ?? 1;
-        hasMoreComplaints.value = currentPage.value < totalPages.value;
-        
-        if (loadMore) {
-          // إضافة الشكاوى الجديدة للقائمة الحالية
-          complaintsList.addAll(complaints);
-        } else {
-          // استبدال القائمة الحالية
-          complaintsList.assignAll(complaints);
-        }
-        
-        isLoadingComplaints.value = false;
-        isLoadMore.value = false;
-        
-        if (!loadMore) {
-          _showSuccessSnackbar('تم تحميل ${complaints.length} شكوى');
-        }
-        
-        print('✅ تم جلب ${complaints.length} شكوى');
-        print('📊 الباجينيشن: الصفحة $currentPage من $totalPages (المجموع: $totalItems)');
-      },
-    );
-  } catch (e) {
-    isLoadingComplaints.value = false;
-    isLoadMore.value = false;
-    print('❌ خطأ غير متوقع: $e');
-    _showErrorSnackbar('حدث خطأ غير متوقع: $e');
   }
-}
-Future<void> loadMoreComplaints() async {
-  if (!hasMoreComplaints.value || isLoadMore.value) return;
+
+
+  void _showDirectOptions() {
+    
+    pickImageFromGallery();
+  }
+
+//التعديييييل
+
+void loadComplaintForEditing(ComplaintModel complaint) {
+  isEditing.value = true;
+  editingComplaintId.value = complaint.id ?? 0;
   
-  currentPage.value++;
-  await loadComplaints(loadMore: true);
+  selectedComplaintType.value = complaint.type;
+  selectedGovernmentEntity.value = complaint.company?.name ?? '';
+  locationController.text = complaint.location;
+  descriptionController.text = complaint.description;
+  
+
+  attachedFiles.clear();
+  
+  print('📝 تحميل الشكوى رقم ${complaint.id} للتعديل');
 }
 
-// دالة تحديث البيانات
-Future<void> refreshComplaints() async {
-  currentPage.value = 1;
-  await loadComplaints();
+//  إلغاء التعديل
+void cancelEditing() {
+  isEditing.value = false;
+  editingComplaintId.value = 0;
+  _resetForm();
+  print(' إلغاء عملية التعديل');
 }
 
-  // ========== تقديم الشكوى ==========
-Future<void> submitComplaint() async {
+// تحديث الشكوى
+Future<void> updateComplaint() async {
   if (!_validateForm()) return;
 
   isLoading.value = true;
+  print('🔄 بدء تحديث الشكوى...');
 
   try {
-    final filePaths = attachedFiles.map((file) => file.path).toList();
+    final filePaths = attachedFiles.map((e) => (e['file'] as File).path).toList();
     
+    if (selectedGovernmentEntity.value.isEmpty) {
+      print(' يرجى اختيار الجهة الحكومية');
+      isLoading.value = false;
+      return;
+    }
+
     final selectedCompany = companies.firstWhere(
-      (company) => company.name == selectedGovernmentEntity.value
+      (company) => company.name == selectedGovernmentEntity.value,
     );
-    
+
     final complaint = ComplaintModel(
-      type: selectedComplaintType.value, 
-      companyId: selectedCompany.id.toString(), 
-      location: locationController.text, 
+      id: editingComplaintId.value,
+      type: selectedComplaintType.value,
+      companyId: selectedCompany.id.toString(),
+      location: locationController.text,
       description: descriptionController.text,
       attachments: filePaths,
-      createdAt: DateTime.now(), 
+      createdAt: DateTime.now(),
     );
 
-    print('🔄 إرسال الشكوى إلى API...');
-    print('📦 بيانات الشكوى: ${complaint.toJson()}');
-
-    final result = await repository.submitComplaint(complaint);
+    final result = await repository.updateComplaint(editingComplaintId.value, complaint);
 
     result.fold(
       (error) {
         isLoading.value = false;
-        print(' فشل تقديم الشكوى: ${error.message}');
-        _showErrorSnackbar(error.message);
+        print(' فشل تحديث الشكوى: ${error.message}');
+        Get.snackbar(
+          'خطأ',
+          'فشل في تحديث الشكوى: ${error.message}',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       },
-      (successComplaint) {
+      (updatedComplaint) {
         isLoading.value = false;
-        print(' تم تقديم الشكوى بنجاح: ${successComplaint.type}');
-        _showSuccessDialog('تم تقديم الشكوى بنجاح', 'نوع الشكوى: ${successComplaint.type}');
-        _resetForm();
+        isEditing.value = false;
+        editingComplaintId.value = 0;
         
-        // إعادة تحميل قائمة الشكاوى بعد الإضافة
-        loadComplaints();
+        print(' تم تحديث الشكوى بنجاح: ${updatedComplaint.id}');
+        Get.snackbar(
+          'نجاح',
+          'تم تحديث الشكوى بنجاح',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+        
+        _resetForm();
+        loadComplaints(); 
+        Get.back();  
       },
     );
   } catch (e) {
     isLoading.value = false;
-    print(' خطأ غير متوقع: $e');
-    _showErrorSnackbar('حدث خطأ غير متوقع: $e');
-  }
-}
-
-  // ========== دوال التحقق ==========
-
-bool _validateForm() {
-  if (selectedComplaintType.isEmpty) {
-    _showErrorSnackbar('يرجى اختيار نوع الشكوى');
-    return false;
-  }
-  
-  if (selectedGovernmentEntity.value == null || selectedGovernmentEntity.value!.isEmpty) {
-    _showErrorSnackbar('يرجى اختيار الجهة الحكومية');
-    return false;
-  }
-  
-
-   if (locationController.text.isEmpty) {
-    _showErrorSnackbar('يرجى إدخال الموقع');
-    return false;
-  }
-  if (descriptionController.text.isEmpty) {
-    _showErrorSnackbar('يرجى إدخال وصف المشكلة');
-    return false;
-  }
-  return true;
-}
-
-void _resetForm() {
-  complaintTypeController.clear();
-  governmentEntityController.clear();
-  locationController.clear();
-  descriptionController.clear();
-  selectedComplaintType.value = '';
-    selectedGovernmentEntity.value = ''; 
-  attachedFiles.clear();
-}
-
-  // ========== دوال المساعدة ==========
-  void _showSuccessDialog(String title, String message) {
-    Get.dialog(
-      AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Get.back();
-              Get.back();
-            },
-            child: const Text('حسناً'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showErrorSnackbar(String message) {
+    print(' خطأ في تحديث الشكوى: $e');
     Get.snackbar(
       'خطأ',
-      message,
+      'حدث خطأ أثناء تحديث الشكوى',
       backgroundColor: Colors.red,
       colorText: Colors.white,
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 4),
     );
   }
+}
 
-  void _showSuccessSnackbar(String message) {
-    Get.snackbar(
-      'نجح', 
-      message,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 3),
-    );
+
+
+
+
+
+
+
+
+
+
+  // إدارة الشكاوى
+  Future<void> loadComplaints({bool loadMore = false}) async {
+    try {
+      if (loadMore) {
+        if (!hasMoreComplaints.value || isLoadMore.value) return;
+        isLoadMore.value = true;
+      } else {
+        isLoadingComplaints.value = true;
+        currentPage.value = 1;
+        hasMoreComplaints.value = true;
+      }
+
+      final result = await repository.getUserComplaints(page: currentPage.value);
+
+      result.fold(
+        (error) {
+          isLoadingComplaints.value = false;
+          isLoadMore.value = false;
+          print('فشل تحميل الشكاوى: ${error.message}');
+        },
+        (response) {
+          final List<ComplaintModel> complaints = response['data'];
+          final meta = response['meta'];
+
+          totalPages.value = meta['total_pages'] ?? 1;
+          totalItems.value = meta['total'] ?? 0;
+          currentPage.value = meta['current_page'] ?? 1;
+          hasMoreComplaints.value = currentPage.value < totalPages.value;
+
+          if (loadMore) {
+            complaintsList.addAll(complaints);
+          } else {
+            complaintsList.assignAll(complaints);
+          }
+
+          isLoadingComplaints.value = false;
+          isLoadMore.value = false;
+        },
+      );
+    } catch (e) {
+      isLoadingComplaints.value = false;
+      isLoadMore.value = false;
+      print('خطأ في تحميل الشكاوى: $e');
+    }
+  }
+
+  Future<void> loadMoreComplaints() async {
+    if (!hasMoreComplaints.value || isLoadMore.value) return;
+    currentPage.value++;
+    await loadComplaints(loadMore: true);
+  }
+
+  Future<void> refreshComplaints() async {
+    currentPage.value = 1;
+    await loadComplaints();
+  }
+
+  // تقديم الشكوى
+  Future<void> submitComplaint() async {
+    if (!_validateForm()) return;
+
+    isLoading.value = true;
+    print('بدء تقديم الشكوى...');
+
+    try {
+      final filePaths = attachedFiles.map((e) => (e['file'] as File).path).toList();
+      
+      if (selectedGovernmentEntity.value.isEmpty) {
+        print('يرجى اختيار الجهة الحكومية');
+        isLoading.value = false;
+        return;
+      }
+
+      final selectedCompany = companies.firstWhere(
+        (company) => company.name == selectedGovernmentEntity.value,
+      );
+
+      final complaint = ComplaintModel(
+        type: selectedComplaintType.value,
+        companyId: selectedCompany.id.toString(),
+        location: locationController.text,
+        description: descriptionController.text,
+        attachments: filePaths,
+        createdAt: DateTime.now(),
+      );
+
+      final result = await repository.submitComplaint(complaint);
+
+      result.fold(
+        (error) {
+          isLoading.value = false;
+          print('فشل تقديم الشكوى: ${error.message}');
+        },
+        (successComplaint) {
+          isLoading.value = false;
+          print('تم تقديم الشكوى بنجاح: ${successComplaint.id}');
+          _resetForm();
+          loadComplaints();
+        },
+      );
+    } catch (e) {
+      isLoading.value = false;
+      print('خطأ في تقديم الشكوى: $e');
+    }
+  }
+
+  // دوال التحقق
+  bool _validateForm() {
+    if (selectedComplaintType.isEmpty) {
+      print('يرجى اختيار نوع الشكوى');
+      return false;
+    }
+    if (selectedGovernmentEntity.value.isEmpty) {
+      print('يرجى اختيار الجهة الحكومية');
+      return false;
+    }
+    if (locationController.text.isEmpty) {
+      print('يرجى إدخال الموقع');
+      return false;
+    }
+    if (descriptionController.text.isEmpty) {
+      print('يرجى إدخال وصف المشكلة');
+      return false;
+    }
+    return true;
+  }
+
+  void _resetForm() {
+    complaintTypeController.clear();
+    governmentEntityController.clear();
+    locationController.clear();
+    descriptionController.clear();
+    selectedComplaintType.value = '';
+    selectedGovernmentEntity.value = '';
+    attachedFiles.clear();
+    update(); // ⭐ تحديث الواجهة
+  }
+
+  void clearTempFiles() {
+    for (var attachment in attachedFiles) {
+      try {
+        final file = attachment['file'] as File;
+        if (file.existsSync()) {
+          file.deleteSync();
+        }
+      } catch (e) {
+        print('خطأ في حذف الملف المؤقت: $e');
+      }
+    }
+    attachedFiles.clear();
   }
 
   @override
   void onClose() {
+    _mounted = false;
     complaintTypeController.dispose();
     governmentEntityController.dispose();
     locationController.dispose();
     descriptionController.dispose();
+    clearTempFiles();
     super.onClose();
   }
-    @override
+
+  @override
+  void onReady() {
+    super.onReady();
+    loadComplaints();
+    loadCompanies();
+
+  }
+
+  @override
   void onInit() {
     super.onInit();
-    
-    loadCompanies();
-    print('🎯 ComplaintController initialized - loadCompanies called');
+    _mounted = true;
   }
 }

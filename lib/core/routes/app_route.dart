@@ -1,6 +1,9 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:governments_complaints/features/complaint/presentation/screens/complaints_screen.dart';
+import 'package:governments_complaints/features/home/presentation/screens/home_page_screen.dart';
 import 'package:governments_complaints/features/nav_bar/presentation/binding/home_binding.dart';
 import 'package:governments_complaints/features/nav_bar/presentation/screens/nav_bar_screen.dart';
+import 'package:governments_complaints/features/profile/presentation/screens/profile_screens.dart';
 
 import '../../features/auth/presentation/binding/auth_binding.dart';
 import '../../features/auth/presentation/screen/login_screen.dart';
@@ -16,11 +19,14 @@ class Routes {
   static const registerScreen = '/registerScreen';
   static const loginScreen = '/loginScreen';
 //home
-  static const home = '/home';
+  static const homepage = '/homepage';
 
   //complaint
   static const addcomplaintScreen='/addcomplaintScreen';
   static const ComplaintsScreen='/complaintScreen';
+
+  //profile
+  static const profile='profile';
 }
 
 class AppRoute {
@@ -45,12 +51,17 @@ class AppRoute {
     binding: ComplaintBinding()
     ),
      GetPage(name: Routes.ComplaintsScreen, 
-    page: ()=>const AddComplaintScreen(),
+    page: ()=>const ComplaintsScreen(),
     binding: ComplaintBinding()
     ),
-    GetPage(name: Routes.home,
-        page: ()=> NavBarScreen(),
-        binding: HomeBinding()
+  //  GetPage(name: Routes.home,
+   //     page: ()=> NavBarScreen(),
+      //  binding: HomeBinding()
+   // ),
+   GetPage(name: Routes.homepage, 
+    page: ()=>const HomePage(),
+    binding: HomeBinding()
     ),
+ 
   ];
 }

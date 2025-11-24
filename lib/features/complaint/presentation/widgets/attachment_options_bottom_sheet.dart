@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:governments_complaints/features/complaint/presentation/controller/compaint_controller.dart';
+
 import '../../../../core/constant/class/app_color.dart';
-import '../controller/compaint_controller.dart';
+
 
 
 class AttachmentOptionsBottomSheet extends StatelessWidget {
@@ -9,7 +11,7 @@ class AttachmentOptionsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ComplaintController>();
+    final controller = Get.find<ComplaintsController>();
     
     return Container(
       decoration: const BoxDecoration(
@@ -46,13 +48,7 @@ class AttachmentOptionsBottomSheet extends StatelessWidget {
               subtitle: 'التقاط صورة جديدة',
               onTap: () => _handleCameraTap(controller),
             ),
-            _buildOption(
-              icon: Icons.insert_drive_file,
-              color: Colors.orange,
-              title: 'ملف',
-              subtitle: 'اختيار ملف من الجهاز',
-              onTap: () => _handleFileTap(controller),
-            ),
+          
             const SizedBox(height: 15),
             ElevatedButton(
               onPressed: () => Get.back(),
@@ -86,18 +82,20 @@ class AttachmentOptionsBottomSheet extends StatelessWidget {
     );
   }
 
-  void _handleGalleryTap(ComplaintController controller) {
-    Get.back();
+ void _handleGalleryTap(ComplaintsController controller) {
+  Get.back();
+  Future.delayed(const Duration(milliseconds: 300), () {
     controller.pickImageFromGallery();
-  }
+  });
+}
 
-  void _handleCameraTap(ComplaintController controller) {
-    Get.back();
+void _handleCameraTap(ComplaintsController controller) {
+  Get.back();
+  Future.delayed(const Duration(milliseconds: 300), () {
     controller.captureImageFromCamera();
-  }
+  });
+}
 
-  void _handleFileTap(ComplaintController controller) {
-    Get.back();
-    controller.pickFile();
-  }
+
+ 
 }
