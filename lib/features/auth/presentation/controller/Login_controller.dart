@@ -71,9 +71,18 @@ class LoginController extends GetxController {
           );
         },
         (response) {
+          TokenStorage.saveToken(response.data['data']['token']);
+
+          print(TokenStorage.getToken());
+          Get.snackbar(
+            "Succsess",
+            response.statusMessage ??"Done",
+            backgroundColor: AppColor.green.withAlpha(80),
+            colorText: AppColor.black,
+          );
           Get.log("Success: $response");
-         
-          Get.offAllNamed(Routes.otpScreen);
+
+          Get.offAllNamed(Routes.home);
           // FirebaseMessagingService firebaseMessagingService =
           //     FirebaseMessagingService();
          // firebaseMessagingService.subscribeToTopic('all_vendors');

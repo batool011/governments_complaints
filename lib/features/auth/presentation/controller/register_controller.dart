@@ -20,8 +20,8 @@ class RegisterController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-final fullNameController =TextEditingController();
-final phoneController =TextEditingController();
+  final fullNameController =TextEditingController();
+  final phoneController =TextEditingController();
   // حالة إظهار/إخفاء كلمة المرور
   var isPasswordHidden = true.obs;
 
@@ -89,6 +89,7 @@ final phoneController =TextEditingController();
         (response) {
            print("TokenStorage.getToken()");
            TokenStorage.saveToken(response.data['data']['token']);
+
              print(TokenStorage.getToken());
             Get.snackbar(
             "Succsess",

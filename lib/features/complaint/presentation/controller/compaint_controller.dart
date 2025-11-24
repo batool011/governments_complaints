@@ -9,7 +9,7 @@ import '../widgets/permission_service.dart';
 
 class ComplaintController extends GetxController {
   final ComplaintRepository repository;
-  final PermissionService _permissionService = PermissionService();
+  //final PermissionService _permissionService = PermissionService();
   final AttachmentService _attachmentService = AttachmentService();
 
   ComplaintController(this.repository);

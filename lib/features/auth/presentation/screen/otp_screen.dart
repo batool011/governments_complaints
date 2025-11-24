@@ -18,9 +18,9 @@ class OtpScreen extends GetView<OtpController> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
+          child: ListView(
         
-            crossAxisAlignment: CrossAxisAlignment.center,
+           // crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 40),
                Text(
@@ -38,7 +38,7 @@ class OtpScreen extends GetView<OtpController> {
                 numberOfFields: 6,
                 focusedBorderColor: AppColor.primaryColor,
                 showFieldAsBox: true,
-                fieldWidth: 50,
+                fieldWidth: 40,
                 borderRadius: BorderRadius.circular(8),
                 onCodeChanged: (String code) {
                   controller.otpCode.value = code;

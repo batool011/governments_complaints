@@ -6,19 +6,19 @@ import 'permission_service.dart';
 
 class AttachmentService {
   final ImagePicker _imagePicker = ImagePicker();
-  final PermissionService _permissionService = PermissionService();
+ // final PermissionService _permissionService = PermissionService();
 
   // ========== اختيار الصور من المعرض ==========
   Future<File?> pickImageFromGallery() async {
     try {
       print('🎨 محاولة فتح المعرض...');
       
-      final hasPermission = await _permissionService.requestGalleryPermission();
+   //   final hasPermission = await _permissionService.requestGalleryPermission();
       
-      if (!hasPermission) {
-        print('❌ لا توجد صلاحية للمعرض');
-        return null;
-      }
+      // if (!hasPermission) {
+      //   print('❌ لا توجد صلاحية للمعرض');
+      //   return null;
+      // }
 
       print('📂 فتح المعرض...');
       final XFile? pickedFile = await _imagePicker.pickImage(
@@ -47,12 +47,12 @@ class AttachmentService {
     try {
       print('📷 محاولة فتح الكاميرا...');
       
-      final hasPermission = await _permissionService.requestCameraPermission();
+   //   final hasPermission = await _permissionService.requestCameraPermission();
       
-      if (!hasPermission) {
-        print('❌ لا توجد صلاحية للكاميرا');
-        return null;
-      }
+      // if (!hasPermission) {
+      //   print('❌ لا توجد صلاحية للكاميرا');
+      //   return null;
+      // }
 
       print('📸 فتح الكاميرا...');
       final XFile? pickedFile = await _imagePicker.pickImage(
@@ -81,12 +81,12 @@ class AttachmentService {
     try {
       print('📁 محاولة اختيار ملف...');
       
-      final hasPermission = await _permissionService.requestGalleryPermission();
+    //  final hasPermission = await _permissionService.requestGalleryPermission();
       
-      if (!hasPermission) {
-        print('❌ لا توجد صلاحية للملفات');
-        return null;
-      }
+      // if (!hasPermission) {
+      //   print('❌ لا توجد صلاحية للملفات');
+      //   return null;
+      // }
 
       print('📄 فتح مدير الملفات...');
       final XFile? pickedFile = await _imagePicker.pickImage(
