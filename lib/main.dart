@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:governments_complaints/features/complaint/presentation/binding/complaint_binding.dart';
 
 import 'core/notification/push_notification_services.dart';
 import 'core/routes/app_route.dart';
@@ -22,9 +23,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      initialBinding: ComplaintBinding(),
       debugShowCheckedModeBanner:  false,
-      initialRoute: Routes.otpScreen,
-      getPages: AppRoute.routes,
+
+      initialRoute: Routes.loginScreen,
+      getPages: AppRoute.routes,      
+
     );
   }
 }

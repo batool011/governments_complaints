@@ -10,6 +10,8 @@ import 'package:governments_complaints/features/auth/presentation/widget/custom_
 import 'package:governments_complaints/features/auth/presentation/widget/custom_text_field.dart';
 import 'package:logger/logger.dart';
 
+import '../../../../core/routes/app_route.dart';
+
 class LoginScreen extends GetView<LoginController> {
   const LoginScreen({super.key});
 
@@ -25,7 +27,7 @@ class LoginScreen extends GetView<LoginController> {
       body: SafeArea(
         child: Stack(
           children: [
-            Image.asset(AppAsset.vector, color: AppColor.primaryColor),
+           // Image.asset(AppAsset.vector, color: AppColor.primaryColor),
             SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -102,14 +104,19 @@ class LoginScreen extends GetView<LoginController> {
                           ),
                         ),
                         const SizedBox(height: 10),
+                      Obx((){
+                        return
+                        controller.isLoading.value ? Center(child: const CircularProgressIndicator(color: AppColor.primaryColor,)):
                         CustomButton(
-                            onPressed: () {
-                         if (controller.formKey.currentState!.validate()) {
-                              controller.login();
-                            }
-        
-                            }, text: AppStrings.login.tr,
-                          ),
+                          onPressed: () {
+                            // if (controller.formKey.currentState!.validate()) {
+                            //   controller.login();
+                            // }
+                               Get.toNamed(Routes.homepage);
+                          }
+                          , text: AppStrings.login.tr,
+                        );
+                      })
                     
                       ],
                     ),

@@ -1,13 +1,10 @@
-// app/modules/auth/register/controllers/register_controller.dart
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:governments_complaints/core/cache/cach_helper.dart';
 import 'package:governments_complaints/core/constant/class/app_color.dart';
 import 'package:governments_complaints/core/network/token_storage.dart';
 import 'package:governments_complaints/core/routes/app_route.dart';
 import 'package:governments_complaints/features/auth/data/repository/auth_repo.dart';
-
 import '../../../../core/notification/push_notification_services.dart';
 
 class LoginController extends GetxController {
@@ -74,15 +71,18 @@ class LoginController extends GetxController {
           TokenStorage.saveToken(response.data['data']['token']);
 
           print(TokenStorage.getToken());
-          Get.snackbar(
-            "Succsess",
-            response.statusMessage ??"Done",
-            backgroundColor: AppColor.green.withAlpha(80),
-            colorText: AppColor.black,
-          );
+          WidgetsBinding.instance.addPostFrameCallback((_){
+            Get.snackbar(
+              "Succsess",
+              response.statusMessage ??"Done",
+              backgroundColor: AppColor.green.withAlpha(80),
+              colorText: AppColor.black,
+            );
+
+          });
           Get.log("Success: $response");
 
-          Get.offAllNamed(Routes.home);
+          Get.offAllNamed(Routes.homepage);
           // FirebaseMessagingService firebaseMessagingService =
           //     FirebaseMessagingService();
          // firebaseMessagingService.subscribeToTopic('all_vendors');

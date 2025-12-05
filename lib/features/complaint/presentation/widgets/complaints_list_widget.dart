@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:governments_complaints/core/constant/class/app_color.dart';
 
 import '../../data/models/complaint_model.dart';
 import '../controller/compaint_controller.dart';
-class ComplaintsListWidget extends GetView<ComplaintController> {
+
+class ComplaintsListWidget extends GetView<ComplaintsController> {
   const ComplaintsListWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       if (controller.isLoadingComplaints.value && controller.complaintsList.isEmpty) {
-        return const Center(child: CircularProgressIndicator());
+        return const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text(
+                'جاري تحميل الشكاوى...',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+        );
       }
 
       if (controller.complaintsList.isEmpty) {
@@ -24,10 +38,27 @@ class ComplaintsListWidget extends GetView<ComplaintController> {
                 'لا توجد شكاوى',
                 style: TextStyle(fontSize: 18, color: Colors.grey),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
+              if (_hasError(context))
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(
+                    'حدث خطأ في تحميل الشكاوى',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.red.shade600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: controller.refreshComplaints,
-                child: const Text('تحديث'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.primaryColor,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('إعادة المحاولة'),
               ),
             ],
           ),
@@ -38,16 +69,15 @@ class ComplaintsListWidget extends GetView<ComplaintController> {
         onRefresh: controller.refreshComplaints,
         child: ListView.builder(
           padding: const EdgeInsets.all(16),
-          itemCount: controller.complaintsList.length + 1, // +1 لـ loading indicator
+          itemCount: controller.complaintsList.length + 1,
           itemBuilder: (context, index) {
-            // إذا وصلنا لنهاية القائمة وعندنا المزيد من البيانات
             if (index == controller.complaintsList.length) {
               if (controller.hasMoreComplaints.value) {
-                // تحميل المزيد تلقائياً
+                // تحميل تلقائي للمزيد من البيانات
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   controller.loadMoreComplaints();
                 });
-                
+
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Center(
@@ -80,6 +110,10 @@ class ComplaintsListWidget extends GetView<ComplaintController> {
     });
   }
 
+  bool _hasError(BuildContext context) {
+    return false;
+  }
+
   Widget _buildComplaintCard(ComplaintModel complaint, int index) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -108,53 +142,53 @@ class ComplaintsListWidget extends GetView<ComplaintController> {
               ],
             ),
             const SizedBox(height: 8),
-            
-            // عرض بيانات الشركة إذا كانت موجودة
+
+            // الجهة
             if (complaint.company != null) ...[
               Row(
                 children: [
-                  const Icon(Icons.business, size: 16, color: Colors.grey),
+                  const Icon(Icons.business, size: 16, color: AppColor.primaryColor),
                   const SizedBox(width: 4),
                   Text(
                     complaint.company!.name,
-                    style: const TextStyle(color: Colors.grey),
+                    style: const TextStyle(color: AppColor.baseFontColor),
                   ),
                 ],
               ),
               const SizedBox(height: 4),
             ],
-            
+            // الموقع
             Row(
               children: [
-                const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                const Icon(Icons.location_on, size: 16, color: AppColor.primaryColor),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
                     complaint.location,
-                    style: const TextStyle(color: Colors.grey),
+                    style: const TextStyle(color: AppColor.baseFontColor),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            
+            // الوصف
             Text(
               complaint.description,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 8),
-            
+            // التاريخ والحالة
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  complaint.createdAt != null 
+                  complaint.createdAt != null
                       ? '${complaint.createdAt!.day}/${complaint.createdAt!.month}/${complaint.createdAt!.year}'
                       : 'غير محدد',
                   style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
+                    fontSize: 14,
+                    color: AppColor.primaryColor,
                   ),
                 ),
                 if (complaint.status != null)
@@ -172,12 +206,27 @@ class ComplaintsListWidget extends GetView<ComplaintController> {
                       ),
                     ),
                   ),
+                // زر التعديل - تم التصحيح هنا
+                IconButton(
+                  onPressed: () => _editComplaint(complaint),
+                  icon: Icon(Icons.edit, color: AppColor.primaryColor),
+                ),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _editComplaint(ComplaintModel complaint) {
+
+    controller.loadComplaintForEditing(complaint);
+    
+
+    Get.toNamed('/addComplaint');
+    
+    print('✏️ فتح الشكوى رقم ${complaint.id} للتعديل');
   }
 
   Color _getStatusColor(String status) {

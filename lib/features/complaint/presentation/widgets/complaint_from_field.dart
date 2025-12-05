@@ -6,7 +6,7 @@ import 'package:governments_complaints/features/complaint/presentation/controlle
 
 class ComplaintFromField extends StatelessWidget {
   ComplaintFromField({super.key});
-  final controller = Get.find<ComplaintController>();
+  final controller = Get.find<ComplaintsController>();
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +27,10 @@ class ComplaintFromField extends StatelessWidget {
 
         // وصف المشكلة 
         _buildDescriptionField(),
+        const SizedBox(height: 16),
+
+        // زر الإرسال أو التحديث
+        _buildSubmitButton(),
         const SizedBox(height: 16),
       ],
     );
@@ -72,7 +76,6 @@ class ComplaintFromField extends StatelessWidget {
           }
           
           return DropdownButtonFormField<String>(
-            // التصحيح النهائي - تحقق بسيط من القيمة الفارغة فقط
             value: controller.selectedGovernmentEntity.value.isEmpty ? null : controller.selectedGovernmentEntity.value,
             items: controller.companies
                 .map((company) => DropdownMenuItem(
@@ -93,46 +96,42 @@ class ComplaintFromField extends StatelessWidget {
     );
   }
 
-
-
   Widget _buildlocationfield(){
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
-const CustomLabelTextField(text: "الموقع"),
-
-Container(
-  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-  decoration: BoxDecoration(
-    color: Colors.grey.shade100,
-    borderRadius: BorderRadius.circular(8),
-    border: Border.all(color: Colors.grey.shade300),
-  ),
-  child: Row(
-    children: [
-      const Icon(
-        Icons.location_on,
-        color: AppColor.primaryColor,
-        size: 28,
-      ),
-    const SizedBox(width: 10),
-      Expanded(
-        child: TextFormField(
-           controller: controller.locationController,
-              maxLines: 2,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.all(12),
-                hintText: 'ادخل الموقع...',
+        const CustomLabelTextField(text: "الموقع"),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.location_on,
+                color: AppColor.primaryColor,
+                size: 28,
               ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextFormField(
+                  controller: controller.locationController,
+                  maxLines: 2,
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.all(12),
+                    hintText: 'ادخل الموقع...',
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-  
       ],
-  ))
-  ]
-  );
+    );
   }
 
   Widget _buildDescriptionField() {
@@ -157,6 +156,79 @@ Container(
         ),
       ],
     );
+  }
+
+  // ⭐⭐ دالة جديدة للأزرار بناءً على وضع التعديل ⭐⭐
+  Widget _buildSubmitButton() {
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(
+          child: Column(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('جاري المعالجة...'),
+            ],
+          ),
+        );
+      }
+
+      return Column(
+        children: [
+          if (controller.isEditing.value) ...[
+            // ⭐ أزرار في وضع التعديل ⭐
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: controller.updateComplaint,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text(
+                  'تحديث الشكوى',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: controller.cancelEditing,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.grey,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  side: const BorderSide(color: Colors.grey),
+                ),
+                child: const Text(
+                  'إلغاء التعديل',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          ] else ...[ // ← هنا الصحيح: else ...[
+            // ⭐ زر في وضع الإضافة ⭐
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: controller.submitComplaint,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.primaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text(
+                  'إرسال الشكوى',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          ],
+        ],
+      );
+    });
   }
 
   Widget _buildLoadingIndicator() {

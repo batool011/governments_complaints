@@ -1,5 +1,5 @@
 class ApiEndPoints {
-  static const String baseUrl = "https://f0a7c147768e.ngrok-free.app";
+  static const String baseUrl = "http://10.41.92.10:8000";
 
   // Auth
   static const String login = "$baseUrl/api/auth/login";
@@ -9,6 +9,10 @@ class ApiEndPoints {
  //complaint
  static const String addComplaint="$baseUrl/api/user/complaint";
  static const String getAllComplaint="$baseUrl/api/user/complaint";
+  static  String getComplaintDetail (int id)=>"$baseUrl/api/user/complaint/$id";
+
+
+  static const String updateComplaint = '$baseUrl/api/user/complaint';
 
   //
     static const String getAllCompanies="$baseUrl/api/user/companies";

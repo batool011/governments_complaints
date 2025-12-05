@@ -7,13 +7,10 @@ class Logger {
 
   bool isEnabled = true;
 
-  /// مستوى اللوق
   LogLevel minLevel = LogLevel.debug;
 
-  /// لتحديد أي tags يتم تسجيلها (فارغ = كل الـ tags)
   List<String> allowedTags = [];
 
-  /// --- دوال تسجيل ---
   void debug(String message, {String? tag}) => _log(message, LogLevel.debug, tag: tag);
   void info(String message, {String? tag}) => _log(message, LogLevel.info, tag: tag);
   void warn(String message, {String? tag}) => _log(message, LogLevel.warn, tag: tag);

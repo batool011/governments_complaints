@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:governments_complaints/features/complaint/presentation/controller/compaint_controller.dart';
+
 
 import '../../../../core/constant/class/app_color.dart';
 import '../../../../core/utils/custom_button.dart';
 import '../../../auth/presentation/widget/custom_label_text_field.dart';
-import '../controller/compaint_controller.dart';
+
 import '../widgets/attached_file_list.dart';
 import '../widgets/complaint_from_field.dart';
-class AddComplaintScreen extends GetView<ComplaintController> {
+class AddComplaintScreen extends GetView<ComplaintsController> {
   const AddComplaintScreen({super.key});
 
   @override
