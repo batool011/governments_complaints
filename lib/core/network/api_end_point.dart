@@ -1,5 +1,5 @@
 class ApiEndPoints {
-  static const String baseUrl = "http://10.41.92.10:8000";
+  static const String baseUrl = "https://fakestoreapi.com";
 
   // Auth
   static const String login = "$baseUrl/api/auth/login";
@@ -16,6 +16,9 @@ class ApiEndPoints {
 
   //
     static const String getAllCompanies="$baseUrl/api/user/companies";
+      static const String getAllProduct="$baseUrl/products";
+        static const String deleteProduct="$baseUrl/products";
+
 
 
 }

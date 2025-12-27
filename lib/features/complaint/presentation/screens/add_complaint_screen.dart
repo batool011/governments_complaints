@@ -15,6 +15,7 @@ class AddComplaintScreen extends GetView<ComplaintsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor:AppColor.secondaryColor,
 appBar: AppBar(
   backgroundColor: AppColor.primaryColor,
   centerTitle: true,

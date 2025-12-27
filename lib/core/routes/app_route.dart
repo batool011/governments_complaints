@@ -3,8 +3,8 @@ import 'package:governments_complaints/features/complaint/presentation/screens/c
 import 'package:governments_complaints/features/complaint/presentation/screens/detail_comlaint_screen.dart';
 import 'package:governments_complaints/features/home/presentation/screens/home_page_screen.dart';
 import 'package:governments_complaints/features/nav_bar/presentation/binding/home_binding.dart';
-import 'package:governments_complaints/features/nav_bar/presentation/screens/nav_bar_screen.dart';
-import 'package:governments_complaints/features/profile/presentation/screens/profile_screens.dart';
+import 'package:governments_complaints/features/splash/presentation/screens/splashscreen.dart';
+
 
 import '../../features/auth/presentation/binding/auth_binding.dart';
 import '../../features/auth/presentation/screen/login_screen.dart';
@@ -29,6 +29,10 @@ class Routes {
 
   //profile
   static const profile='profile';
+
+  //splash
+  static const Splashscreen='/splashScreen';
+
 }
 
 class AppRoute {
@@ -69,7 +73,11 @@ class AppRoute {
         page: ()=>const DetailComplaintScreen(),
         binding: ComplaintBinding()
     ),
+        GetPage(name: Routes.Splashscreen,
+        page: ()=>const Splashscreen(),
+    ),
 
- 
+
+
   ];
 }

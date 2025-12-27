@@ -15,6 +15,8 @@ class RegisterScreen extends GetView<RegisterController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+            backgroundColor: AppColor.secondaryColor,
+
       body: SafeArea(
         child: Stack(
           children: [

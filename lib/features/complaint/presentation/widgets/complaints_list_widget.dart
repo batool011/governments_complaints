@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:governments_complaints/core/constant/class/app_color.dart';
+import 'package:governments_complaints/core/routes/app_route.dart';
 
 import '../../data/models/complaint_model.dart';
 import '../controller/compaint_controller.dart';
@@ -115,105 +116,105 @@ class ComplaintsListWidget extends GetView<ComplaintsController> {
   }
 
   Widget _buildComplaintCard(ComplaintModel complaint, int index) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  complaint.type,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  '#${complaint.id}',
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-
-            // الجهة
-            if (complaint.company != null) ...[
+    return InkWell(
+      onTap: () {
+        Get.toNamed(Routes.detailScreen,arguments: complaint.id);
+      },
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(Icons.business, size: 16, color: AppColor.primaryColor),
-                  const SizedBox(width: 4),
                   Text(
-                    complaint.company!.name,
-                    style: const TextStyle(color: AppColor.baseFontColor),
+                    complaint.type,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    '#${complaint.id}',
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
-            ],
-            // الموقع
-            Row(
-              children: [
-                const Icon(Icons.location_on, size: 16, color: AppColor.primaryColor),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    complaint.location,
-                    style: const TextStyle(color: AppColor.baseFontColor),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            // الوصف
-            Text(
-              complaint.description,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 8),
-            // التاريخ والحالة
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  complaint.createdAt != null
-                      ? '${complaint.createdAt!.day}/${complaint.createdAt!.month}/${complaint.createdAt!.year}'
-                      : 'غير محدد',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColor.primaryColor,
-                  ),
-                ),
-                if (complaint.status != null)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _getStatusColor(complaint.status!),
-                      borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 8),
+      
+              // الجهة
+              if (complaint.company != null) ...[
+                Row(
+                  children: [
+                    const Icon(Icons.business, size: 16, color: AppColor.primaryColor),
+                    const SizedBox(width: 4),
+                    Text(
+                      complaint.company!.name,
+                      style: const TextStyle(color: AppColor.baseFontColor),
                     ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+              ],
+              // الموقع
+              Row(
+                children: [
+                  const Icon(Icons.location_on, size: 16, color: AppColor.primaryColor),
+                  const SizedBox(width: 4),
+                  Expanded(
                     child: Text(
-                      complaint.status!,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.white,
-                      ),
+                      complaint.location,
+                      style: const TextStyle(color: AppColor.baseFontColor),
                     ),
                   ),
-                // زر التعديل - تم التصحيح هنا
-                IconButton(
-                  onPressed: () => _editComplaint(complaint),
-                  icon: Icon(Icons.edit, color: AppColor.primaryColor),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+              const SizedBox(height: 8),
+              // الوصف
+              Text(
+                complaint.description,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8),
+              // التاريخ والحالة
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    complaint.createdAt != null
+                        ? '${complaint.createdAt!.day}/${complaint.createdAt!.month}/${complaint.createdAt!.year}'
+                        : 'غير محدد',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColor.primaryColor,
+                    ),
+                  ),
+                  if (complaint.status != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(complaint.status!),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(getStatusText(complaint.status!))
+      
+                    ),
+                  // زر التعديل - تم التصحيح هنا
+                  IconButton(
+                    onPressed: () => _editComplaint(complaint),
+                    icon: Icon(Icons.edit, color: AppColor.primaryColor),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -229,17 +230,30 @@ class ComplaintsListWidget extends GetView<ComplaintsController> {
     print('✏️ فتح الشكوى رقم ${complaint.id} للتعديل');
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'مقبول':
-      case 'مكتمل':
-        return Colors.green;
-      case 'قيد المراجعة':
-        return Colors.orange;
-      case 'مرفوض':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
+ Color _getStatusColor(int status) {
+  switch (status) {
+    case 1:
+      return Colors.orange; // انتظار
+    case 2:
+      return Colors.blue;   // قيد المعالجة
+    case 3:
+      return Colors.green;  // مكتمل
+    default:
+      return Colors.grey;
   }
+}
+String getStatusText(int status) {
+  switch (status) {
+    case 1:
+      return 'انتظار';
+    case 2:
+      return 'قيد المعالجة';
+    case 3:
+      return 'مكتمل';
+    default:
+      return 'غير معروف';
+  }
+}
+
+
 }

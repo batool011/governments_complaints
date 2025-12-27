@@ -14,7 +14,8 @@ class OtpScreen extends GetView<OtpController> {
   Widget build(BuildContext context) {
    
     return Scaffold(
-    
+          backgroundColor: AppColor.secondaryColor,
+
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),

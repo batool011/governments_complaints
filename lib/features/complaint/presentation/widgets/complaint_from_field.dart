@@ -55,6 +55,7 @@ class ComplaintFromField extends StatelessWidget {
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
             hintText: 'اختر نوع الشكوى',
+            prefixIcon: Icon(Icons.report,color: AppColor.iconColor,)
           ),
         )),
       ],
@@ -89,6 +90,7 @@ class ComplaintFromField extends StatelessWidget {
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               hintText: "اختر الجهة الحكومية",
+              prefixIcon: Icon(Icons.account_balance,color: AppColor.iconColor,)
             ),
           );
         }),
@@ -104,15 +106,16 @@ class ComplaintFromField extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: Colors.grey.shade100,
+            color: Colors.transparent,
+        
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(color: AppColor.primaryColor,width: 1,style: BorderStyle.solid),
           ),
           child: Row(
             children: [
               const Icon(
                 Icons.location_on,
-                color: AppColor.primaryColor,
+                color: AppColor.iconColor,
                 size: 28,
               ),
               const SizedBox(width: 10),
@@ -141,8 +144,10 @@ class ComplaintFromField extends StatelessWidget {
         const CustomLabelTextField(text: "وصف المشكلة"),
         Container(
           decoration: BoxDecoration(
-            color: Colors.grey.shade100,
+          color: Colors.transparent,
+        
             borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: AppColor.primaryColor,width: 1,style: BorderStyle.solid),
           ),
           child: TextFormField(
             controller: controller.descriptionController,
@@ -151,6 +156,7 @@ class ComplaintFromField extends StatelessWidget {
               border: InputBorder.none,
               contentPadding: EdgeInsets.all(12),
               hintText: 'صف المشكلة بالتفصيل...',
+              prefixIcon: Icon(Icons.description,color: AppColor.iconColor,)
             ),
           ),
         ),
@@ -158,7 +164,6 @@ class ComplaintFromField extends StatelessWidget {
     );
   }
 
-  // ⭐⭐ دالة جديدة للأزرار بناءً على وضع التعديل ⭐⭐
   Widget _buildSubmitButton() {
     return Obx(() {
       if (controller.isLoading.value) {
@@ -176,7 +181,6 @@ class ComplaintFromField extends StatelessWidget {
       return Column(
         children: [
           if (controller.isEditing.value) ...[
-            // ⭐ أزرار في وضع التعديل ⭐
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -208,8 +212,7 @@ class ComplaintFromField extends StatelessWidget {
                 ),
               ),
             ),
-          ] else ...[ // ← هنا الصحيح: else ...[
-            // ⭐ زر في وضع الإضافة ⭐
+          ] else ...[ 
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -255,7 +258,7 @@ class ComplaintFromField extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: AppColor.primaryColor,width: 1,style: BorderStyle.solid),
         borderRadius: BorderRadius.circular(8),
       ),
       child: const Center(

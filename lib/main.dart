@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:governments_complaints/features/complaint/presentation/binding/complaint_binding.dart';
 
+
 import 'core/notification/push_notification_services.dart';
 import 'core/routes/app_route.dart';
 import 'firebase_options.dart';
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
       initialBinding: ComplaintBinding(),
       debugShowCheckedModeBanner:  false,
 
-      initialRoute: Routes.loginScreen,
+      initialRoute:Routes.Splashscreen,
       getPages: AppRoute.routes,      
 
     );

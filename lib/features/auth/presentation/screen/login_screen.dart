@@ -24,6 +24,7 @@ class LoginScreen extends GetView<LoginController> {
       ),
     );
     return Scaffold(
+      backgroundColor: AppColor.secondaryColor,
       body: SafeArea(
         child: Stack(
           children: [
@@ -71,10 +72,12 @@ class LoginScreen extends GetView<LoginController> {
                       children: [
                         CustomLabelTextField(
                           text: AppStrings.email.tr,
+
                         ),
                         CustomTextField(
                           controller: controller.emailController,
                           prifixIcon: Icons.email,
+                          hintText: "  XYZ123@gmail.com",
                         
                         ),
                        CustomLabelTextField(
@@ -82,6 +85,7 @@ class LoginScreen extends GetView<LoginController> {
                         ),
                         Obx(
                           () => CustomTextField(
+                            hintText: " xxxxxxxx",
                             controller: controller.passwordController,
                             prifixIcon: Icons.password,
                           obscureText: controller.isPasswordHidden.value,
@@ -109,9 +113,9 @@ class LoginScreen extends GetView<LoginController> {
                         controller.isLoading.value ? Center(child: const CircularProgressIndicator(color: AppColor.primaryColor,)):
                         CustomButton(
                           onPressed: () {
-                            // if (controller.formKey.currentState!.validate()) {
-                            //   controller.login();
-                            // }
+                            if (controller.formKey.currentState!.validate()) {
+                              controller.login();
+                            }
                                Get.toNamed(Routes.homepage);
                           }
                           , text: AppStrings.login.tr,

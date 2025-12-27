@@ -74,7 +74,6 @@ final editingComplaintId = 0.obs;
           (failure) {
         errorMessage.value = failure.message;
         Get.snackbar('خطأ', failure.message);
-        print("failure");
       },
           (response) {
            //complaintsDetail.value = response.data;
@@ -163,11 +162,9 @@ final editingComplaintId = 0.obs;
         }
         
         attachedFiles.add({'file': file, 'size': size});
-        print('✅ تم إضافة الصورة: ${image.path}');
-        update(); // ⭐ مهم لتحديث الواجهة
+        update(); 
       }
     } catch (e) {
-      print('خطأ في اختيار الصورة: $e');
     }
   }
 
@@ -180,17 +177,15 @@ final editingComplaintId = 0.obs;
       if (image != null) {
         final file = File(image.path);
         attachedFiles.add({'file': file, 'size': await file.length()});
-        print('✅ تم التقاط الصورة: ${image.path}');
-        update(); // ⭐ مهم لتحديث الواجهة
+        update();
       }
     } catch (e) {
-      print('خطأ في التقاط الصورة: $e');
     }
   }
 
   void removeAttachment(int index) {
     attachedFiles.removeAt(index);
-    print('✅ تم إزالة المرفق');
+  
     update(); 
   }
 
@@ -261,7 +256,6 @@ final editingComplaintId = 0.obs;
         enableDrag: true,
       );
     } catch (e) {
-      print(' خطأ في فتح Bottom Sheet: $e');
       _showDirectOptions();
     }
   }
@@ -294,7 +288,6 @@ void cancelEditing() {
   isEditing.value = false;
   editingComplaintId.value = 0;
   _resetForm();
-  print(' إلغاء عملية التعديل');
 }
 
 // تحديث الشكوى
@@ -302,7 +295,6 @@ Future<void> updateComplaint() async {
   if (!_validateForm()) return;
 
   isLoading.value = true;
-  print('🔄 بدء تحديث الشكوى...');
 
   try {
     final filePaths = attachedFiles.map((e) => (e['file'] as File).path).toList();
@@ -320,7 +312,7 @@ Future<void> updateComplaint() async {
     final complaint = ComplaintModel(
       id: editingComplaintId.value,
       type: selectedComplaintType.value,
-      companyId: selectedCompany.id.toString(),
+      companyId: selectedCompany.id,
       location: locationController.text,
       description: descriptionController.text,
       attachments: filePaths,
@@ -332,7 +324,6 @@ Future<void> updateComplaint() async {
     result.fold(
       (error) {
         isLoading.value = false;
-        print(' فشل تحديث الشكوى: ${error.message}');
         Get.snackbar(
           'خطأ',
           'فشل في تحديث الشكوى: ${error.message}',
@@ -360,7 +351,6 @@ Future<void> updateComplaint() async {
     );
   } catch (e) {
     isLoading.value = false;
-    print(' خطأ في تحديث الشكوى: $e');
     Get.snackbar(
       'خطأ',
       'حدث خطأ أثناء تحديث الشكوى',
@@ -392,33 +382,30 @@ Future<void> updateComplaint() async {
         hasMoreComplaints.value = true;
       }
 
-      final result = await repository.getUserComplaints(page: currentPage.value);
+     final result = await repository.getComplaints(page: currentPage.value);
 
-      result.fold(
-        (error) {
-          isLoadingComplaints.value = false;
-          isLoadMore.value = false;
-          print('فشل تحميل الشكاوى: ${error.message}');
-        },
-        (response) {
-          final List<ComplaintModel> complaints = response['data'];
-          final meta = response['meta'];
+result.fold(
+  (error) {
+    isLoadingComplaints.value = false;
+    isLoadMore.value = false;
+  },
+  (response) {
+    totalPages.value = response.meta.totalPages;
+    totalItems.value = response.meta.total;
+    currentPage.value = response.meta.currentPage;
+    hasMoreComplaints.value = currentPage.value < totalPages.value;
 
-          totalPages.value = meta['total_pages'] ?? 1;
-          totalItems.value = meta['total'] ?? 0;
-          currentPage.value = meta['current_page'] ?? 1;
-          hasMoreComplaints.value = currentPage.value < totalPages.value;
+    if (loadMore) {
+      complaintsList.addAll(response.items);
+    } else {
+      complaintsList.assignAll(response.items);
+    }
 
-          if (loadMore) {
-            complaintsList.addAll(complaints);
-          } else {
-            complaintsList.assignAll(complaints);
-          }
+    isLoadingComplaints.value = false;
+    isLoadMore.value = false;
+  },
+);
 
-          isLoadingComplaints.value = false;
-          isLoadMore.value = false;
-        },
-      );
     } catch (e) {
       isLoadingComplaints.value = false;
       isLoadMore.value = false;
@@ -459,7 +446,7 @@ Future<void> updateComplaint() async {
 
       final complaint = ComplaintModel(
         type: selectedComplaintType.value,
-        companyId: selectedCompany.id.toString(),
+        companyId: selectedCompany.id,
         location: locationController.text,
         description: descriptionController.text,
         attachments: filePaths,

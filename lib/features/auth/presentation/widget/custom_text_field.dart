@@ -9,7 +9,8 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
      this.validator,
     this.obscureText,
-    this.onTapIcon
+    this.onTapIcon,
+    this.hintText
   });
   final IconData? suffixIcon;
   final IconData prifixIcon;
@@ -17,29 +18,36 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final  bool? obscureText;
   final void Function()? onTapIcon;
+  final String ?hintText;
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 60,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(30),
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(15),
+           border: Border.all(color: AppColor.primaryColor,width: 1,style: BorderStyle.solid),
       ),
       child: TextFormField(
+        
         validator: validator,
         controller: controller,
         obscureText: obscureText == null || obscureText == false ? false : true,
         decoration: InputDecoration(
-          border: InputBorder.none,
+          hintText: hintText,
+          filled: true,
+          fillColor: Colors.transparent,
+       border: InputBorder.none,
           prefixIcon: Icon(
             prifixIcon,
-            color: AppColor.primaryColor,
+            color: AppColor.iconColor,
           ),
           suffixIcon: InkWell(
             onTap: onTapIcon,
             child: Icon(
               suffixIcon,
-              color: AppColor.primaryColor,
+              color: AppColor.iconColor,
             ),
           ),
           errorBorder: InputBorder.none,

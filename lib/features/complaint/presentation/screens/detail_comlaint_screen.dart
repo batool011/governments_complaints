@@ -12,7 +12,7 @@ class DetailComplaintScreen extends GetView<ComplaintsController> {
 
   @override
   Widget build(BuildContext context) {
-    //final int complaintId = Get.arguments;
+  final int complaintId = Get.arguments;
     return Scaffold(
       appBar: AppBar(
         title: Text('تفاصيل الشكوى',style: TextStyle(color: AppColor.white),textAlign: TextAlign.end,),

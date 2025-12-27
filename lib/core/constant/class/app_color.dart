@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AppColor {
-  static const Color primaryColor = Color(0xff064790);
+  static const Color primaryColor = Color.fromARGB(255, 30, 59, 92);
+  static const Color secondaryColor = Color.fromARGB(255, 247, 243, 231);
+  static const Color iconColor=Color.fromARGB(255, 42, 123, 216);
   static const Color orange = Colors.orange;
   static const Color baseFontColor = Colors.black;
   static const Color imageColor = Color.fromARGB(255, 106, 75, 2);
