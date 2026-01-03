@@ -1,11 +1,13 @@
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:governments_complaints/core/routes/app_route.dart';
 import 'package:governments_complaints/features/complaint/data/models/detail_comlaint_model.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../data/models/complaint_model.dart';
 import '../../data/repository/complaint_repository.dart';
-import '../widgets/attachment_options_bottom_sheet.dart';
+
 
 class ComplaintsController extends GetxController {
   final ComplaintRepository repository;
@@ -235,6 +237,16 @@ final editingComplaintId = 0.obs;
                     captureImageFromCamera();
                   },
                 ),
+                ListTile(
+  leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
+  title: const Text('ملف PDF'),
+  subtitle: const Text('اختيار ملف PDF'),
+  onTap: () {
+    Get.back();
+    pickPdfFile();
+  },
+),
+
                 const SizedBox(height: 15),
                 // زر الإلغاء
                 SizedBox(
@@ -266,6 +278,37 @@ final editingComplaintId = 0.obs;
     pickImageFromGallery();
   }
 
+//pdf 
+Future<void> pickPdfFile() async {
+  try {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+
+    if (result != null && result.files.single.path != null && _mounted) {
+      final file = File(result.files.single.path!);
+      final size = await file.length();
+
+      if (size > 10 * 1024 * 1024) {
+        print(' حجم ملف PDF كبير جداً');
+        return;
+      }
+
+      attachedFiles.add({
+        'file': file,
+        'size': size,
+        'type': 'pdf',
+      });
+
+      update();
+      print('تم إضافة ملف PDF');
+    }
+  } catch (e) {
+    print(' خطأ في اختيار ملف PDF: $e');
+  }
+}
+
 //التعديييييل
 
 void loadComplaintForEditing(ComplaintModel complaint) {
@@ -280,7 +323,7 @@ void loadComplaintForEditing(ComplaintModel complaint) {
 
   attachedFiles.clear();
   
-  print('📝 تحميل الشكوى رقم ${complaint.id} للتعديل');
+  print(' تحميل الشكوى رقم ${complaint.id} للتعديل');
 }
 
 //  إلغاء التعديل
@@ -346,17 +389,12 @@ Future<void> updateComplaint() async {
         
         _resetForm();
         loadComplaints(); 
-        Get.back();  
+           Get.offAllNamed(Routes.ComplaintsScreen);
       },
     );
   } catch (e) {
     isLoading.value = false;
-    Get.snackbar(
-      'خطأ',
-      'حدث خطأ أثناء تحديث الشكوى',
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
+  
   }
 }
 
@@ -502,7 +540,6 @@ result.fold(
     selectedComplaintType.value = '';
     selectedGovernmentEntity.value = '';
     attachedFiles.clear();
-    update(); // ⭐ تحديث الواجهة
   }
 
   void clearTempFiles() {

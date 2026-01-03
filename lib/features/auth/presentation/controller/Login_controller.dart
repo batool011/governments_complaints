@@ -60,24 +60,24 @@ class LoginController extends GetxController {
         (failure) {
           errorMessage.value = failure.message;
           Get.log("Error: ${failure.statusCode} ${failure.message}");
-          Get.snackbar(
-            "Error",
-            failure.message,
-            backgroundColor: AppColor.red.withAlpha(80),
-            colorText: AppColor.black,
-          );
+          // Get.snackbar(
+          //   "Error",
+          //   failure.message,
+          //   backgroundColor: AppColor.red.withAlpha(80),
+          //   colorText: AppColor.black,
+          // );
         },
         (response) {
           TokenStorage.saveToken(response.data['data']['token']);
 
           print(TokenStorage.getToken());
           WidgetsBinding.instance.addPostFrameCallback((_){
-            Get.snackbar(
-              "Succsess",
-              response.statusMessage ??"Done",
-              backgroundColor: AppColor.green.withAlpha(80),
-              colorText: AppColor.black,
-            );
+            // Get.snackbar(
+            //   "Succsess",
+            //   response.statusMessage ??"Done",
+            //   backgroundColor: AppColor.green.withAlpha(80),
+            //   colorText: AppColor.black,
+            // );
 
           });
           Get.log("Success: $response");

@@ -8,6 +8,13 @@ class ComplaintDetailController extends GetxController {
   var complaintsDetail = Rxn<ComplaintData>();
   var errorMessage = ''.obs;
   final isLoading = false.obs;
+  late int complaintId;@override
+  
+void onInit() {
+  super.onInit();
+  complaintId = Get.arguments;
+  getComplainsDetail(complaintId);
+}
 
 
 

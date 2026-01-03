@@ -76,45 +76,42 @@ class ComplaintRepository {
   }
 
   /// تحديث شكوى
-  Future<Either<AppException, ComplaintModel>> updateComplaint(int complaintId, ComplaintModel complaint) async {
-    final formData = FormData.fromMap({
-      'type': complaint.type,
-      'company_id': complaint.companyId,
-      'description': complaint.description,
-      'location': complaint.location,
-      '_method': 'PUT',
-    });
+ Future<Either<AppException, ComplaintModel>> updateComplaint(
+  int complaintId,
+  ComplaintModel complaint,
+) async {
+  final formData = FormData.fromMap({
+    'type': complaint.type,
+    'company_id': complaint.companyId,
+    'description': complaint.description,
+    'location': complaint.location,
+  });
 
-    for (final filePath in complaint.attachments) {
-      final file = await MultipartFile.fromFile(filePath, filename: filePath.split('/').last);
-      formData.files.add(MapEntry('attachments[]', file));
-    }
-
-    final result = await DioHelper.postData(
-      url: '${ApiEndPoints.getAllComplaint}/$complaintId',
-      data: formData,
-      requiresToken: true,
-      isFormData: true,
-    );
-
-    return result.fold(
-      (l) => Left(l),
-      (r) => Right(ComplaintModel.fromJson(r.data['data'])),
+  for (final filePath in complaint.attachments) {
+    formData.files.add(
+      MapEntry(
+        'attachments[]',
+        await MultipartFile.fromFile(
+          filePath,
+          filename: filePath.split('/').last,
+        ),
+      ),
     );
   }
 
-  /// حذف شكوى
-  Future<Either<AppException, bool>> deleteComplaint(int complaintId) async {
-    final result = await DioHelper.deleteData(
-      url: '${ApiEndPoints.getAllComplaint}/$complaintId',
-      requiresToken: true,
-    );
+  final result = await DioHelper.putData(
+    url: '${ApiEndPoints.getAllComplaint}/$complaintId',
+    data: formData,            
+    requiresToken: true,
+    isFormData: true,        
+  );
 
-    return result.fold(
-      (l) => Left(l),
-      (r) => Right(true),
-    );
-  }
+  return result.fold(
+    (l) => Left(l),
+    (r) => Right(ComplaintModel.fromJson(r.data['data'])),
+  );
+}
+
 
 
   Future<Either<AppException, List<CompanyModel>>> getAllCompanies() async {

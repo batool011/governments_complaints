@@ -1,5 +1,5 @@
 class ApiEndPoints {
-  static const String baseUrl = "https://fakestoreapi.com";
+  static const String baseUrl = "https://25cdc00935d3.ngrok-free.app";
 
   // Auth
   static const String login = "$baseUrl/api/auth/login";

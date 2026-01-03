@@ -29,8 +29,7 @@ class ComplaintFromField extends StatelessWidget {
         _buildDescriptionField(),
         const SizedBox(height: 16),
 
-        // زر الإرسال أو التحديث
-        _buildSubmitButton(),
+        
         const SizedBox(height: 16),
       ],
     );
@@ -164,75 +163,7 @@ class ComplaintFromField extends StatelessWidget {
     );
   }
 
-  Widget _buildSubmitButton() {
-    return Obx(() {
-      if (controller.isLoading.value) {
-        return const Center(
-          child: Column(
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('جاري المعالجة...'),
-            ],
-          ),
-        );
-      }
 
-      return Column(
-        children: [
-          if (controller.isEditing.value) ...[
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: controller.updateComplaint,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text(
-                  'تحديث الشكوى',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: controller.cancelEditing,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.grey,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: const BorderSide(color: Colors.grey),
-                ),
-                child: const Text(
-                  'إلغاء التعديل',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-            ),
-          ] else ...[ 
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: controller.submitComplaint,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-                child: const Text(
-                  'إرسال الشكوى',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-            ),
-          ],
-        ],
-      );
-    });
-  }
 
   Widget _buildLoadingIndicator() {
     return Container(

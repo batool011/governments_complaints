@@ -37,7 +37,7 @@ class DioHelper {
 
     if (requiresToken) {
       final token = await TokenStorage.getToken();
-     //final token=" eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDEvYXBpL2F1dGgvbG9naW4iLCJpYXQiOjE3NjM5OTI4MDQsImV4cCI6MTc2Mzk5NjQwNCwibmJmIjoxNzYzOTkyODA0LCJqdGkiOiJUQjRxcGZvVWlrcUhmYkpBIiwic3ViIjoiMzgiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.z8WLlfAizE8Xa9MoI8Oj5izF6ZUgFUppf7aadCJtMX8";
+  //   final token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMjVjZGMwMDkzNWQzLm5ncm9rLWZyZWUuYXBwL2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNzY3MDAyMTMyLCJleHAiOjE3NjcwMDU3MzIsIm5iZiI6MTc2NzAwMjEzMiwianRpIjoiN3VzYmF5RVdNMm0wdTI5TCIsInN1YiI6IjQxIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.yG8AaY8rYlH6Dlr_LMPelA8ohB2RcwOko7i4bg616jc";
       if (token != null && token.isNotEmpty) {
         _dio.options.headers['Authorization'] = 'Bearer $token';
       }
@@ -105,10 +105,12 @@ class DioHelper {
 
   static Future<Either<AppException, Response>> putData({
     required String url,
-    Map<String, dynamic>? data,
+  dynamic data,
     bool requiresToken = false,
+       bool isFormData = false,
+
   }) async {
-    await _setHeaders(requiresToken: requiresToken, withJsonContent: true);
+    await _setHeaders(requiresToken: requiresToken, withJsonContent: !isFormData);
     return _safeRequest(() => _dio.put(url, data: data));
   }
 

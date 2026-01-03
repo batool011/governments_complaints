@@ -1,6 +1,6 @@
 import 'package:governments_complaints/core/constant/class/typedef.dart';
 
-/// Meta data for pagination
+
 
 /// Company Model
 class CompanyModel {

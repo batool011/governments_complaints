@@ -15,6 +15,7 @@ class ComplaintsListWidget extends GetView<ComplaintsController> {
       if (controller.isLoadingComplaints.value && controller.complaintsList.isEmpty) {
         return const Center(
           child: Column(
+            
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CircularProgressIndicator(),
@@ -74,7 +75,7 @@ class ComplaintsListWidget extends GetView<ComplaintsController> {
           itemBuilder: (context, index) {
             if (index == controller.complaintsList.length) {
               if (controller.hasMoreComplaints.value) {
-                // تحميل تلقائي للمزيد من البيانات
+              
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   controller.loadMoreComplaints();
                 });
@@ -116,104 +117,132 @@ class ComplaintsListWidget extends GetView<ComplaintsController> {
   }
 
   Widget _buildComplaintCard(ComplaintModel complaint, int index) {
-    return InkWell(
-      onTap: () {
-        Get.toNamed(Routes.detailScreen,arguments: complaint.id);
-      },
-      child: Card(
-        margin: const EdgeInsets.only(bottom: 12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    complaint.type,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '#${complaint.id}',
-                    style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-      
-              // الجهة
-              if (complaint.company != null) ...[
+    return Container(
+      color: AppColor.secondaryColor,
+      child: InkWell(
+        onTap: () {
+          Get.toNamed(Routes.detailScreen,arguments: complaint.id);
+        },
+        child: Card(
+        
+          margin: const EdgeInsets.only(bottom: 12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Icon(Icons.business, size: 16, color: AppColor.primaryColor),
-                    const SizedBox(width: 4),
                     Text(
-                      complaint.company!.name,
-                      style: const TextStyle(color: AppColor.baseFontColor),
+                      complaint.type,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                     if (complaint.status != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _getStatusColor(complaint.status!),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(getStatusText(complaint.status!))
+        
+                      ),
+
+                    Container(
+                      height: 60,
+                      width: 60,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.green.shade300
+                      ),
+                      child: Text(
+                        '#${complaint.id}',
+                        style: const TextStyle(
+                          color: AppColor.green,
+                          fontSize: 12,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
-              ],
-              // الموقع
-              Row(
-                children: [
-                  const Icon(Icons.location_on, size: 16, color: AppColor.primaryColor),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      complaint.location,
-                      style: const TextStyle(color: AppColor.baseFontColor),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              // الوصف
-              Text(
-                complaint.description,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-              // التاريخ والحالة
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    complaint.createdAt != null
-                        ? '${complaint.createdAt!.day}/${complaint.createdAt!.month}/${complaint.createdAt!.year}'
-                        : 'غير محدد',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColor.primaryColor,
-                    ),
-                  ),
-                  if (complaint.status != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(complaint.status!),
-                        borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 8),
+        
+                // الجهة
+                if (complaint.company != null) ...[
+                  Row(
+                    children: [
+                      const Icon(Icons.business, size: 16, color: AppColor.iconColor),
+                      const SizedBox(width: 4),
+                      Text(
+                        complaint.company!.name,
+                        style: const TextStyle(color: AppColor.primaryColor),
                       ),
-                      child: Text(getStatusText(complaint.status!))
-      
-                    ),
-                  // زر التعديل - تم التصحيح هنا
-                  IconButton(
-                    onPressed: () => _editComplaint(complaint),
-                    icon: Icon(Icons.edit, color: AppColor.primaryColor),
+                    ],
                   ),
+                  const SizedBox(height: 4),
                 ],
-              ),
-            ],
+                // الموقع
+                Row(
+                  children: [
+                    const Icon(Icons.location_on, size: 16, color: AppColor.iconColor),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        complaint.location,
+                        style: const TextStyle(color: AppColor.primaryColor),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // الوصف
+                Text(
+                  complaint.description,
+                  style: TextStyle(
+                    color: Colors.grey
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                // التاريخ والحالة
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      complaint.createdAt != null
+                          ? '${complaint.createdAt!.day}/${complaint.createdAt!.month}/${complaint.createdAt!.year}'
+                          : 'غير محدد',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColor.primaryColor,
+                      ),
+                    ),
+                   
+                   Expanded(
+                     child: ElevatedButton( style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColor.primaryColor,
+                      shadowColor: Colors.white
+                     ),
+                      onPressed: () => _editComplaint(complaint),
+                      child: Row(
+                        children: [
+                     Icon(Icons.edit, color: AppColor.secondaryColor),
+                          Text("تعديل ",style: TextStyle(color: AppColor.secondaryColor),),
+                        ],
+                      )),
+                   ),
+                   SizedBox(width: 6),
+               
+                   
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -225,19 +254,19 @@ class ComplaintsListWidget extends GetView<ComplaintsController> {
     controller.loadComplaintForEditing(complaint);
     
 
-    Get.toNamed('/addComplaint');
+    Get.toNamed(Routes.addcomplaintScreen);
     
-    print('✏️ فتح الشكوى رقم ${complaint.id} للتعديل');
+    print(' فتح الشكوى رقم ${complaint.id} للتعديل');
   }
 
  Color _getStatusColor(int status) {
   switch (status) {
     case 1:
-      return Colors.orange; // انتظار
+      return Colors.orange; 
     case 2:
-      return Colors.blue;   // قيد المعالجة
+      return Colors.blue;   
     case 3:
-      return Colors.green;  // مكتمل
+      return Colors.green;  
     default:
       return Colors.grey;
   }
