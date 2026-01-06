@@ -153,11 +153,11 @@ class ComplaintsListWidget extends GetView<ComplaintsController> {
                       ),
 
                     Container(
-                      height: 60,
-                      width: 60,
+                      height: 30,
+                      width:30,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
-                        color: Colors.green.shade300
+                        color: Colors.green.shade100
                       ),
                       child: Text(
                         '#${complaint.id}',
@@ -209,7 +209,7 @@ class ComplaintsListWidget extends GetView<ComplaintsController> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 8),
-                // التاريخ والحالة
+                // التاريخة
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -222,9 +222,10 @@ class ComplaintsListWidget extends GetView<ComplaintsController> {
                         color: AppColor.primaryColor,
                       ),
                     ),
-                   
-                   Expanded(
+                   SizedBox(width: 70),
+                   Container(
                      child: ElevatedButton( style: ElevatedButton.styleFrom(
+                      minimumSize: Size(50, 30),
                       backgroundColor: AppColor.primaryColor,
                       shadowColor: Colors.white
                      ),

@@ -1,6 +1,7 @@
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:governments_complaints/features/complaint/presentation/screens/complaints_screen.dart';
 import 'package:governments_complaints/features/complaint/presentation/screens/detail_comlaint_screen.dart';
+import 'package:governments_complaints/features/home/presentation/binding/home_binding.dart';
 import 'package:governments_complaints/features/home/presentation/screens/home_page_screen.dart';
 import 'package:governments_complaints/features/nav_bar/presentation/binding/home_binding.dart';
 import 'package:governments_complaints/features/splash/presentation/screens/splashscreen.dart';

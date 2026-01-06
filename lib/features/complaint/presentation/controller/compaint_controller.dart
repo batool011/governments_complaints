@@ -499,11 +499,24 @@ result.fold(
           print('فشل تقديم الشكوى: ${error.message}');
         },
         (successComplaint) {
-          isLoading.value = false;
-          print('تم تقديم الشكوى بنجاح: ${successComplaint.id}');
-          _resetForm();
-          loadComplaints();
-        },
+    isLoading.value = false;
+
+    Get.snackbar(
+      'نجاح',
+      'تم إرسال الشكوى بنجاح',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+      duration: const Duration(seconds: 2),
+    );
+
+    _resetForm();
+    loadComplaints();
+
+    Future.delayed(const Duration(seconds: 2), () {
+      Get.offAllNamed(Routes.ComplaintsScreen);
+    });
+  },
       );
     } catch (e) {
       isLoading.value = false;
