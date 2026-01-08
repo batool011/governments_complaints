@@ -24,11 +24,19 @@ class LoginScreen extends GetView<LoginController> {
       ),
     );
     return Scaffold(
-      backgroundColor: AppColor.secondaryColor,
+      //backgroundColor: AppColor.secondaryColor,
       body: SafeArea(
         child: Stack(
           children: [
-           // Image.asset(AppAsset.vector, color: AppColor.primaryColor),
+            Positioned.fill(
+              child: Image.asset(
+                AppAsset.vector,
+                fit: BoxFit.cover,
+                color: AppColor.primaryColor,
+                colorBlendMode: BlendMode.srcIn, // اختياري
+              ),
+            ),
+
             SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -78,7 +86,7 @@ class LoginScreen extends GetView<LoginController> {
                           controller: controller.emailController,
                           prifixIcon: Icons.email,
                           hintText: "  XYZ123@gmail.com",
-                        
+
                         ),
                        CustomLabelTextField(
                           text: AppStrings.password.tr,
@@ -89,9 +97,9 @@ class LoginScreen extends GetView<LoginController> {
                             controller: controller.passwordController,
                             prifixIcon: Icons.password,
                           obscureText: controller.isPasswordHidden.value,
-                               
+
                             onTapIcon: () => controller
-                                .togglePasswordVisibility(), 
+                                .togglePasswordVisibility(),
                             suffixIcon: controller.isPasswordHidden.value
                                 ? Icons.visibility_off
                                 : Icons.visibility,
@@ -109,19 +117,37 @@ class LoginScreen extends GetView<LoginController> {
                         ),
                         const SizedBox(height: 10),
                       Obx((){
+                        final disabled = controller.isBlocked.value || controller.isLoading.value;
+
                         return
                         controller.isLoading.value ? Center(child: const CircularProgressIndicator(color: AppColor.primaryColor,)):
                         CustomButton(
-                          onPressed: () {
+                          // onPressed: () {
+                          //   if (controller.formKey.currentState!.validate()) {
+                          //     controller.login();
+                          //
+                          //   }
+                          //
+                          // }
+                            text: disabled
+                            ? "حاول بعد ${controller.retryAfterSeconds.value}s"
+                            : AppStrings.login.tr,
+                          onPressed: disabled
+                              ? (){}
+                              : () {
                             if (controller.formKey.currentState!.validate()) {
                               controller.login();
                             }
-                               Get.toNamed(Routes.homepage);
-                          }
-                          , text: AppStrings.login.tr,
+                          },
                         );
-                      })
-                    
+                      }),
+                      SizedBox(height: 30,),
+                      Row(
+                        children: [
+                          Text("don't have an account ? "),
+                          GestureDetector(onTap: (){Get.toNamed(Routes.registerScreen);},child: Text("Register"),)
+                        ],
+                      )
                       ],
                     ),
                   )

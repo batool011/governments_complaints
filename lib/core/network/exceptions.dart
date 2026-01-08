@@ -46,7 +46,7 @@ class AppException implements Exception {
       case 400:
         return "Bad request. Please check your input.";
       case 401:
-        return "Unauthorized. Please log in again.";
+        return  message;
       case 403:
         return "You don’t have permission to perform this action.";
       case 404:
@@ -55,6 +55,8 @@ class AppException implements Exception {
         return "Request timeout. Please try again.";
       case 409:
         return "Conflict detected. Please check and retry.";
+      case 429:
+        return "$message";
       case 422:
         return "$message";
       case 500:

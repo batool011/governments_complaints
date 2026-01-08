@@ -8,6 +8,7 @@ import 'package:governments_complaints/core/routes/app_route.dart';
 import 'package:governments_complaints/features/auth/data/repository/auth_repo.dart';
 
 import '../../../../core/notification/push_notification_services.dart';
+import '../../../../core/snak_bar_service.dart';
 
 
 class RegisterController extends GetxController {
@@ -79,25 +80,17 @@ class RegisterController extends GetxController {
         (failure) {
           errorMessage.value = failure.message;
           Get.log("Error: ${failure.statusCode} ${failure.message}");
-          Get.snackbar(
-            "Error",
-            failure.message,
-            backgroundColor: AppColor.red.withAlpha(80),
-            colorText: AppColor.black,
-          );
+          SnackbarService.success(failure.message);
+
         },
         (response) {
            print("TokenStorage.getToken()");
            TokenStorage.saveToken(response.data['data']['token']);
 
              print(TokenStorage.getToken());
-            Get.snackbar(
-            "Succsess",
-            response.statusMessage ??"Done",
-            backgroundColor: AppColor.green.withAlpha(80),
-            colorText: AppColor.black,
-          );
-          Get.log("Success: $response");
+           SnackbarService.success("تم تسجيل الدخول بنجاح");
+
+           Get.log("Success: $response");
           // TokenStorage.saveUserId(response.data['data']['user_id']);
           // TokenStorage.saveToken(response.data['token']);
 

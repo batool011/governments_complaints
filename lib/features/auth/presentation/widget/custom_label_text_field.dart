@@ -7,7 +7,7 @@ class CustomLabelTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6, top: 12),
+      padding: const EdgeInsets.only(bottom: 6, top: 12,left: 20),
       child: Text(
         text,
         style: const TextStyle(color: AppColor.primaryColor),

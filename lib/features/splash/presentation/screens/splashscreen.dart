@@ -4,6 +4,8 @@ import 'package:governments_complaints/core/constant/class/app_asset.dart';
 import 'package:governments_complaints/core/constant/class/app_color.dart';
 import 'package:governments_complaints/core/routes/app_route.dart';
 
+import '../../../../core/network/token_storage.dart';
+
 
 class Splashscreen extends StatefulWidget {
   const Splashscreen({super.key});
@@ -16,8 +18,15 @@ class _SplashscreenState extends State<Splashscreen> {
    @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 3), () {
-Get.offNamed(Routes.loginScreen);
+    Future.delayed(Duration(seconds: 3), () async{
+
+        final isLogged = await TokenStorage.isLoggedIn();
+        if (isLogged) {
+          Get.offAllNamed(Routes.homepage);
+        }
+        else if (!isLogged) {
+          Get.offAllNamed(Routes.loginScreen);
+        }
 
     });
   }

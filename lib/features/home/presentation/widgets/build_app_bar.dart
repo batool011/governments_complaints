@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:governments_complaints/core/constant/class/app_color.dart';
+import 'package:governments_complaints/core/routes/app_route.dart';
 
 class BuildAppBar extends StatelessWidget {
   const BuildAppBar({super.key});
@@ -39,7 +41,7 @@ class BuildAppBar extends StatelessWidget {
                 ),
               ),
               IconButton(onPressed: (){
-
+                Get.toNamed(Routes.noti);
               }, icon: Icon(Icons.notification_add,color: AppColor.white,
               size: 36,
               ),)

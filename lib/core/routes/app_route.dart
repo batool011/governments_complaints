@@ -4,6 +4,7 @@ import 'package:governments_complaints/features/complaint/presentation/screens/d
 import 'package:governments_complaints/features/home/presentation/binding/home_binding.dart';
 import 'package:governments_complaints/features/home/presentation/screens/home_page_screen.dart';
 import 'package:governments_complaints/features/nav_bar/presentation/binding/home_binding.dart';
+import 'package:governments_complaints/features/notification/presentation/screens/notification_screen.dart';
 import 'package:governments_complaints/features/splash/presentation/screens/splashscreen.dart';
 
 
@@ -33,6 +34,7 @@ class Routes {
 
   //splash
   static const Splashscreen='/splashScreen';
+  static const noti='/noti';
 
 }
 
@@ -74,8 +76,12 @@ class AppRoute {
         page: ()=>const DetailComplaintScreen(),
         binding: ComplaintBinding()
     ),
-        GetPage(name: Routes.Splashscreen,
-        page: ()=>const Splashscreen(),
+    GetPage(name: Routes.Splashscreen,
+      page: ()=>const Splashscreen(),
+    ),
+
+    GetPage(name: Routes.noti,
+      page: ()=>const NotificationsScreen(),
     ),
 
 

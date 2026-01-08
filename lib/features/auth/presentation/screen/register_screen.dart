@@ -9,13 +9,15 @@ import 'package:governments_complaints/features/auth/presentation/controller/reg
 import 'package:governments_complaints/features/auth/presentation/widget/custom_label_text_field.dart';
 import 'package:governments_complaints/features/auth/presentation/widget/custom_text_field.dart';
 
+import '../../../../core/routes/app_route.dart';
+
 class RegisterScreen extends GetView<RegisterController> {
   const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            backgroundColor: AppColor.secondaryColor,
+           // backgroundColor: AppColor.secondaryColor,
 
       body: SafeArea(
         child: Stack(
@@ -131,6 +133,13 @@ class RegisterScreen extends GetView<RegisterController> {
                           },
                           text: AppStrings.register.tr,
                         ),
+                        SizedBox(height: 30,),
+                        Row(
+                          children: [
+                            Text("do you have an account ? "),
+                            GestureDetector(onTap: (){Get.toNamed(Routes.loginScreen);},child: Text("Login"),)
+                          ],
+                        )
                       ],
                     ),
                   )

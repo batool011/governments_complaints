@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:governments_complaints/core/constant/class/app_color.dart';
 import 'package:governments_complaints/core/network/token_storage.dart';
 import 'package:governments_complaints/core/routes/app_route.dart';
+import 'package:governments_complaints/core/snak_bar_service.dart';
 import 'package:governments_complaints/features/auth/data/repository/auth_repo.dart';
 import '../../../../core/notification/push_notification_services.dart';
 
@@ -20,6 +21,9 @@ class LoginController extends GetxController {
   // حالة التحميل
   var isLoading = false.obs;
   var errorMessage =''.obs;
+  var isBlocked = false.obs;
+  var retryAfterSeconds = 19.obs;
+
 
   // تبديل ظهور كلمة المرور
   void togglePasswordVisibility() {
@@ -32,6 +36,7 @@ class LoginController extends GetxController {
     passwordController.dispose();
     super.onClose();
   }
+
   Future<void> login() async {
     errorMessage.value = '';
     isLoading.value = true;
@@ -57,39 +62,47 @@ class LoginController extends GetxController {
       final result = await repo.login(data: data);
 
       result.fold(
-        (failure) {
-          errorMessage.value = failure.message;
-          Get.log("Error: ${failure.statusCode} ${failure.message}");
-          // Get.snackbar(
-          //   "Error",
-          //   failure.message,
-          //   backgroundColor: AppColor.red.withAlpha(80),
-          //   colorText: AppColor.black,
-          // );
-        },
+            (respnse) {
+              print("fkdfdf");
+          errorMessage.value = respnse.message;
+          print( respnse.message);
+         SnackbarService.error(respnse.message);
+             if(respnse.statusCode==429)_startCooldown();
+
+            } ,
         (response) {
           TokenStorage.saveToken(response.data['data']['token']);
 
           print(TokenStorage.getToken());
-          WidgetsBinding.instance.addPostFrameCallback((_){
-            // Get.snackbar(
-            //   "Succsess",
-            //   response.statusMessage ??"Done",
-            //   backgroundColor: AppColor.green.withAlpha(80),
-            //   colorText: AppColor.black,
-            // );
+          SnackbarService.success("تم الدخول بنجاح");
 
-          });
           Get.log("Success: $response");
 
           Get.offAllNamed(Routes.homepage);
           // FirebaseMessagingService firebaseMessagingService =
           //     FirebaseMessagingService();
-         // firebaseMessagingService.subscribeToTopic('all_vendors');
+          //firebaseMessagingService.subscribeToTopic('all_vendors');
         },
       );
     } finally {
       isLoading.value = false;
     }
   }
+  void _startCooldown() {
+    isBlocked.value = true;
+    retryAfterSeconds.value = 19; // عدد الثواني
+
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 1));
+      if (retryAfterSeconds.value > 0) {
+        retryAfterSeconds.value--;
+        return true;
+      } else {
+        isBlocked.value = false;
+        return false;
+      }
+    });
+  }
 }
+
+

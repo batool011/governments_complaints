@@ -6,6 +6,8 @@ import 'package:governments_complaints/core/constant/class/app_color.dart';
 import 'package:governments_complaints/core/network/token_storage.dart';
 import 'package:governments_complaints/features/auth/data/repository/auth_repo.dart';
 
+import '../../../../core/snak_bar_service.dart';
+
 class OtpController extends GetxController {
   final codeController = TextEditingController();
   final formKey = GlobalKey<FormState>();
@@ -60,14 +62,12 @@ class OtpController extends GetxController {
             Get.log("Error: ${failure.statusCode} ${failure.message}");
              print("TokenStorage.getToken()");
              print(TokenStorage.getToken().toString());
-            Get.snackbar(
-              "Error",
-              failure.message,
-              backgroundColor: AppColor.red.withAlpha(80),
-              colorText: AppColor.black,
-            );
+            SnackbarService.error(failure.message);
+
           },
           (response) {
+            SnackbarService.success("تم الدخول بنجاح");
+
             print("TokenStorage.getToken()");
              print(TokenStorage.getToken());
             Get.log("Success: $response");

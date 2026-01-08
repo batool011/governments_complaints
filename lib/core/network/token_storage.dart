@@ -92,4 +92,11 @@ class TokenStorage {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_vendorType);
   }
+  static Future<bool> isLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString(_tokenKey);
+
+    return token != null && token.isNotEmpty;
+  }
+
 }

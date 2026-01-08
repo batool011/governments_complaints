@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       initialBinding: ComplaintBinding(),
       debugShowCheckedModeBanner:  false,
 
-      initialRoute:Routes.loginScreen,
+      initialRoute:Routes.Splashscreen,
       getPages: AppRoute.routes,      
 
     );

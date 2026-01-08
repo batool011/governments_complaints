@@ -11,7 +11,7 @@ plugins {
 android {
     namespace = "com.example.governments_complaints"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.3.13750724"
+    ndkVersion = "25.2.9519653"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
